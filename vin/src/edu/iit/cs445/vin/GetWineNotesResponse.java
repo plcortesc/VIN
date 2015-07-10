@@ -5,15 +5,15 @@ import java.util.ArrayList;
 public class GetWineNotesResponse implements java.io.Serializable {
 
 	private static final long serialVersionUID = 492858515591357421L;
-	private ArrayList<NoteResponseSearch> nrs;
+	private ArrayList<NoteResponseSearch> notes;
 	public GetWineNotesResponse(ArrayList<NoteResponseSearch> nrs) {
-		this.setNrs(nrs);
+		this.setNotes(nrs);
 	}
-	public ArrayList<NoteResponseSearch> getNrs() {
-		return nrs;
+	public ArrayList<NoteResponseSearch> getNotes() {
+		return notes;
 	}
-	public void setNrs(ArrayList<NoteResponseSearch> nrs) {
-		this.nrs = nrs;
+	public void setNotes(ArrayList<NoteResponseSearch> nrs) {
+		this.notes = nrs;
 	}
 
 }

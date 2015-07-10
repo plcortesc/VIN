@@ -10,12 +10,12 @@ public class MstDetailResponse implements java.io.Serializable {
 	private static final long serialVersionUID = -7733501797015474691L;
 	private int ID;
 	private MonthlySelectionType mst;
-	private YearMonth ym;
+	private String ym;
 	private String create_date;
 	private int created_by;
 	private ArrayList<WineResponse> wines;
 	
-	public MstDetailResponse(int ID, MonthlySelectionType mst, YearMonth ym, String create_date, int created_by, ArrayList<WineResponse> wines){
+	public MstDetailResponse(int ID, MonthlySelectionType mst, String ym, String create_date, int created_by, ArrayList<WineResponse> wines){
 		this.setMst(mst);
 		this.setYm(ym);
 		this.setWines(wines);
@@ -37,11 +37,11 @@ public class MstDetailResponse implements java.io.Serializable {
 		this.mst = mst;
 	}
 
-	public YearMonth getYm() {
+	public String getYm() {
 		return ym;
 	}
 
-	public void setYm(YearMonth ym) {
+	public void setYm(String ym) {
 		this.ym = ym;
 	}
 

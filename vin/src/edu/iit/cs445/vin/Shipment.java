@@ -1,6 +1,5 @@
 package edu.iit.cs445.vin;
 
-import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.Calendar;
 
@@ -10,22 +9,34 @@ public class Shipment implements java.io.Serializable {
 	private MonthlySelectionType mst;	
 	private ArrayList<Note> notes;
 	private Calendar date;
-	private int ID;
+	private int SID;
 	private MonthlySelection ms;
-	private YearMonth ym;
+	private String ym;
 	private int size;
 	private ShipmentStatus status;
 	private int deliveryfee;
 	private int msDeliveryfee;
 	
-	public Shipment(MonthlySelectionType mst){
+	public Shipment(){
+		this.SID = IdGenerator.newID();
+    	this.date = Calendar.getInstance();
+    	this.status = ShipmentStatus.PENDING;
+    	this.ms = new MonthlySelection();
+    	this.ym = ms.getYm();
+    	this.setDeliveryfee(8);	
+    	this.notes = new ArrayList<Note>();
+    }
+	
+	public Shipment(MonthlySelectionType mst, MonthlySelection ms){
 		this.size = 1;
-    	this.ID = IdGenerator.newID();
+    	this.SID = IdGenerator.newID();
     	this.date = Calendar.getInstance();
     	this.mst = mst;
     	this.status = ShipmentStatus.PENDING;
+    	this.ms = ms;
     	this.ym = ms.getYm();
     	this.setDeliveryfee(8);
+    	this.notes = new ArrayList<Note>();
     	switch(mst){
 	    	case AR:setMsDeliveryfee(50);break;
 	    	case AW:setMsDeliveryfee(60);break;
@@ -42,18 +53,29 @@ public class Shipment implements java.io.Serializable {
 	}
 	
 	public void addNote(Note n){
-		if(n.getContent().length()<128){
-			System.out.println("Minimum note length: 128 characters");
-		} else if(n.getContent().length()>1024){
+//		if(n.getContent().length()<128){
+//			System.out.println("Minimum note length: 128 characters");
+//		} else 
+		if(n.getContent().length()>1024){
 			System.out.println("Maximum note length: 1024 characters");
+		}else{
+			System.out.println("Congratulations! Note added");
+			this.notes.add(n);
 		}
-		System.out.println("Congratulations! Note added");
-		this.notes.add(n);
 	}	
+	
+	public void updateNote(int NID, Note n){
+		for(int i=0; i<notes.size(); i++){
+			if(notes.get(i).getNID()==NID){
+				notes.set(i, n);
+				notes.get(i).setNID(NID);
+			}
+		}
+	}
 	
 	public void removeNote(int NID){
 		for(int i=0; i<notes.size(); i++){
-			if(notes.get(i).getID()==NID){
+			if(notes.get(i).getNID()==NID){
 				notes.remove(i);
 			}
 		}
@@ -75,7 +97,7 @@ public class Shipment implements java.io.Serializable {
 		return this.size;
 	}
 	
-	public YearMonth getYm(){
+	public String getYm(){
 		return this.ym;
 	}
 	
@@ -95,8 +117,8 @@ public class Shipment implements java.io.Serializable {
 		return ms.getMs();
 	}
 	
-	public int getID(){
-		return this.ID;
+	public int getSID(){
+		return this.SID;
 	}
 	
 	public boolean isMatch(String kw) {

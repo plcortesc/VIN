@@ -15,24 +15,41 @@ public class Club implements java.io.Serializable {
 		return this.receipt();
 	}
 	
-	public AddSubsResponse addSubscriber(ArrayList<Subscriber> subs, String st, String c, String s, String z, String n, String e, String p, String tw, String fb){
+	public AddSubsResponse addSubscriber(ArrayList<Subscriber> subs, String st, String c, String s, String z,
+			String n, String e, String p, String tw, String fb){
 		AddSubscriber sr = new AddSubscriber(st,c,s,z,n,e,p,tw,fb);
 		AddSubsResponse ssd = sr.addAccount(subs,null);
 		
 		return ssd;
 	}
 	
-	public AddSubsResponse setSubscriber(int UID, String name, String email, String phone, String tw, String fb,ArrayList<Subscriber> subs){
-		AddSubsResponse ssd = null;
+	public ModifySubsResponse setSubscriber(int UID, String name, String email, String phone, String twitter, 
+			String facebook,String street, String city, String state, String zip, ArrayList<Subscriber> subs){
+		ModifySubsResponse msr = null;
 		for(Subscriber subscriber: subs){
 			if(subscriber.getID()==UID){
-				AddSubscriber sr = new AddSubscriber(subscriber.getAddress().getStreet(),subscriber.getAddress().getCity(),
-								   subscriber.getAddress().getState(),subscriber.getAddress().getZip(),name,email,phone,tw,fb);
-				subs.remove(subscriber);
-				ssd = sr.addAccount(subs,UID);
-				return ssd;	
+				String n=name==null ? subscriber.getName():name;
+				String e=email==null ? subscriber.getEmail():email;
+				String p=phone==null ? subscriber.getPhone():phone;
+				String tw=twitter==null ? subscriber.getTwitter():twitter;
+				String fb=facebook==null ? subscriber.getFacebook():facebook;
+				String st=street==null ? subscriber.getAddress().getStreet():street;
+				String c=city==null ? subscriber.getAddress().getCity():city;
+				String s=state==null ? subscriber.getAddress().getState():state;
+				String z=zip==null ? subscriber.getAddress().getZip():zip;
+				
+				MonthlySelectionType mst = subscriber.getPreference();
+			    String date = subscriber.getDate();
+			    ArrayList<Shipment> shipments = subscriber.getShipments();
+				ArrayList<Wine> wines = subscriber.getWines();
+								
+				ModifySubscriber msub = new ModifySubscriber(st,c,s,z,n,e,p,tw,fb);
+				msr = msub.modifyAccount(subs, UID,mst,date,shipments,wines);
+				if(msr.getErrors().size()==0) subs.remove(subscriber);
+				break;
 			}
-		}return ssd;
+		}
+		return msr;
 	}
 	
 	public SubscriberResponse printSubscriber(int UID,ArrayList<Subscriber> subs){
@@ -59,8 +76,10 @@ public class Club implements java.io.Serializable {
 		ArrayList<ShipmentResponse> sr = new ArrayList<ShipmentResponse>();
 		for(Subscriber s: subs){
 			if(s.getID()==UID){
-				for(Shipment ship: s.getShipments()){
-					sr.add(new ShipmentResponse(ship.getID(),ship.getYm(),ship.getStatus()));
+				if(s.getShipments()!=null){
+					for(Shipment ship: s.getShipments()){
+						sr.add(new ShipmentResponse(ship.getSID(),ship.getYm(),ship.getStatus()));
+					}
 				}
 			}
 		}
@@ -72,13 +91,13 @@ public class Club implements java.io.Serializable {
 		for(Subscriber subscriber: subs){
 			if(subscriber.getID()==UID){
 				for(Shipment shipment: subscriber.getShipments()){
-					if(shipment.getID()==SID){
+					if(shipment.getSID()==SID){
 						String date = Integer.toString(shipment.getDate().get(Calendar.DAY_OF_MONTH))+
 									  "/"+Integer.toString(shipment.getDate().get(Calendar.MONTH))+
 									  "/"+Integer.toString(shipment.getDate().get(Calendar.YEAR));
 						ArrayList<WineResponse> wrs = new ArrayList<WineResponse>();
 						for(Wine w:shipment.getMsWines()){
-							wrs.add(new WineResponse(w.getID(),w.getLabelName()));
+							wrs.add(new WineResponse(w.getWID(),w.getLabelName()));
 						}
 						sdr = new ShipmentDetailResponse(shipment.getYm(),shipment.getStatus(), date, shipment.getMst(), wrs);
 						
@@ -93,12 +112,12 @@ public class Club implements java.io.Serializable {
 		for(Subscriber subscriber: subs){
 			if(subscriber.getID()==UID){
 				for(Shipment shipment: subscriber.getShipments()){
-					if(shipment.getID()==SID){
+					if(shipment.getSID()==SID && shipment.getNotes()!=null){
 						for(Note n: shipment.getNotes()){
 							String date = Integer.toString(n.getDate().get(Calendar.DAY_OF_MONTH))+
 									  "/"+Integer.toString(n.getDate().get(Calendar.MONTH))+
 									  "/"+Integer.toString(n.getDate().get(Calendar.YEAR));
-							snr.add(new NoteResponse(n.getID(),date,n.getContent()));
+							snr.add(new NoteResponse(n.getNID(),date,n.getContent()));
 						}
 						
 					}
@@ -111,12 +130,12 @@ public class Club implements java.io.Serializable {
 		for(Subscriber subscriber: subs){
 			if(subscriber.getID()==UID){
 				for(Shipment shipment: subscriber.getShipments()){
-					if(shipment.getID()==SID){
+					if(shipment.getSID()==SID){
 						shipment.addNote(n);
 					}
 				}
 			}
-		}return new PostNoteResponse(n.getID());
+		}return new PostNoteResponse(n.getNID());
 	}
 	
 	public NoteIDResponse printShipNoteNID(int UID, int SID, int NID,ArrayList<Subscriber> subs){
@@ -124,9 +143,9 @@ public class Club implements java.io.Serializable {
 		for(Subscriber subscriber: subs){
 			if(subscriber.getID()==UID){
 				for(Shipment shipment: subscriber.getShipments()){
-					if(shipment.getID()==SID){
+					if(shipment.getSID()==SID){
 						for(Note note: shipment.getNotes()){
-							if(note.getID()==NID){
+							if(note.getNID()==NID){
 								String date = Integer.toString(note.getDate().get(Calendar.MONTH))+
 										  "/"+Integer.toString(note.getDate().get(Calendar.DAY_OF_MONTH))+
 										  "/"+Integer.toString(note.getDate().get(Calendar.YEAR));
@@ -143,13 +162,8 @@ public class Club implements java.io.Serializable {
 		for(Subscriber subscriber: subs){
 			if(subscriber.getID()==UID){
 				for(Shipment shipment: subscriber.getShipments()){
-					if(shipment.getID()==SID){
-						for(Note note :shipment.getNotes()){
-							if(note.getID()==NID){
-								shipment.getNotes().remove(note);
-								shipment.addNote(n);
-							}
-						}
+					if(shipment.getSID()==SID){
+						shipment.updateNote(NID, n);
 					}
 				}
 			}
@@ -160,7 +174,7 @@ public class Club implements java.io.Serializable {
 		for(Subscriber subscriber: subs){
 			if(subscriber.getID()==UID){
 				for(Shipment shipment: subscriber.getShipments()){
-					if(shipment.getID()==SID){
+					if(shipment.getSID()==SID){
 						shipment.removeNote(NID);
 					}
 				}
@@ -173,7 +187,7 @@ public class Club implements java.io.Serializable {
 		for(Subscriber subscriber: subs){
 			if(subscriber.getID()==UID){
 				for(Wine w: subscriber.getWines()){
-					wrs.add(new WineResponse(w.getID(),w.getLabelName()));
+					wrs.add(new WineResponse(w.getWID(),w.getLabelName()));
 				}	
 			}
 		}return new GetWinesResponse(wrs);
@@ -184,8 +198,8 @@ public class Club implements java.io.Serializable {
 		for(Subscriber subscriber: subs){
 			if(subscriber.getID()==UID){
 				for(Wine w: subscriber.getWines()){
-					if(w.getID()==WID){
-						wr = new WineResponse(w.getID(),w.getLabelName());
+					if(w.getWID()==WID){
+						wr = new WineResponse(w.getWID(),w.getLabelName());
 					}
 				}				
 			}
@@ -197,9 +211,9 @@ public class Club implements java.io.Serializable {
 		for(Subscriber subscriber: subs){
 			if(subscriber.getID()==UID){
 				for(Wine w: subscriber.getWines()){
-					if(w.getID()==WID){
+					if(w.getWID()==WID && w.getNotes()!=null){
 						for(Note n: w.getNotes()){
-							nrs.add(new NoteResponseSearch(n.getID(),n.getContent()));
+							nrs.add(new NoteResponseSearch(n.getNID(),n.getContent()));
 						}
 					}
 				}
@@ -211,12 +225,12 @@ public class Club implements java.io.Serializable {
 		for(Subscriber subscriber: subs){
 			if(subscriber.getID()==UID){
 				for(Wine w: subscriber.getWines()){
-					if(w.getID()==WID){
+					if(w.getWID()==WID){
 						w.addNote(n);
 					}
 				}
 			}
-		}return new PostNoteResponse(n.getID());
+		}return new PostNoteResponse(n.getNID());
 	}
 	
 	public NoteResponseSearch printWineNoteNID(int UID, int WID, int NID,ArrayList<Subscriber> subs){
@@ -224,10 +238,10 @@ public class Club implements java.io.Serializable {
 		for(Subscriber subscriber: subs){
 			if(subscriber.getID()==UID){
 				for(Wine w: subscriber.getWines()){
-					if(w.getID()==WID){
+					if(w.getWID()==WID){
 						for(Note note: w.getNotes()){
-							if(note.getID()==NID){
-								nrs = new NoteResponseSearch(note.getID(),note.getContent());
+							if(note.getNID()==NID){
+								nrs = new NoteResponseSearch(note.getNID(),note.getContent());
 							}
 						}
 					}
@@ -240,7 +254,7 @@ public class Club implements java.io.Serializable {
 		for(Subscriber subscriber: subs){
 			if(subscriber.getID()==UID){
 				for(Wine w: subscriber.getWines()){
-					if(w.getID()==WID){
+					if(w.getWID()==WID){
 						w.updateNote(NID, n);
 					}
 				}
@@ -252,7 +266,7 @@ public class Club implements java.io.Serializable {
 		for(Subscriber subscriber: subs){
 			if(subscriber.getID()==UID){
 				for(Wine w: subscriber.getWines()){
-					if(w.getID()==WID){
+					if(w.getWID()==WID){
 						w.removeNote(NID);
 					}
 				}
@@ -265,7 +279,7 @@ public class Club implements java.io.Serializable {
 		for(Subscriber subscriber: subs){
 			if(subscriber.getID()==UID){
 				for(Wine w: subscriber.getWines()){
-					if(w.getID()==WID){
+					if(w.getWID()==WID){
 						wr = new WineRating(w.getRating());
 					}
 				}
@@ -277,7 +291,8 @@ public class Club implements java.io.Serializable {
 		for(Subscriber subscriber: subs){
 			if(subscriber.getID()==UID){
 				for(Wine w: subscriber.getWines()){
-					if(w.getID()==WID){
+					if(w.getWID()==WID){
+						System.out.println("Hellodolly");
 						w.addRating(r);;
 					}
 				}
@@ -286,24 +301,24 @@ public class Club implements java.io.Serializable {
 	}
 	
 	public PostNoteResponse addAdmin(String name,ArrayList<Admin> admin){
-		Admin ad = new Admin(name);
-		admin.add(ad);
-		return new PostNoteResponse(ad.getID());
+		AddAdmin aa = new AddAdmin(name);
+		PostNoteResponse pnr = aa.addAccount(admin);
+		return pnr;
 	}
 	
 	public GetAdminResponse printAdmin(ArrayList<Admin> admin){
-		ArrayList<AdminResponse> ar = new ArrayList<AdminResponse>();
+		ArrayList<AdminResponse> admins = new ArrayList<AdminResponse>();
 		for(Admin a: admin){
-			ar.add(new AdminResponse(a.getID(),a.getName()));
-		}return new GetAdminResponse(ar);
+			admins.add(new AdminResponse(a.getAID(),a.getName()));
+		}return new GetAdminResponse(admins);
 	}
 	
 	public void setAdmin(String name, int AID,ArrayList<Admin> admin){
 		for(Admin a: admin){
-			if(a.getID()==AID){
+			if(a.getAID()==AID){
 				Admin adm = new Admin(name);
-				adm.setDate(a.getDate());
-				adm.setID(a.getID());
+				adm.setD(a.getDate());
+				adm.setAID(a.getAID());
 				admin.remove(a);
 			}
 		}
@@ -312,14 +327,12 @@ public class Club implements java.io.Serializable {
 	public AdminDetailResponse printAdminAID(int AID,ArrayList<Admin> admin){
 		AdminDetailResponse adr = null;
 		for(int i=0;i<admin.size();i++){
-			if(admin.get(i).getID()==AID){
-				String str = admin.get(i).getDate().get(Calendar.MONTH)+"/"+
-						admin.get(i).getDate().get(Calendar.DAY_OF_MONTH)+"/"+
-						admin.get(i).getDate().get(Calendar.YEAR)+"\n";
+			if(admin.get(i).getAID()==AID){
+				String str = admin.get(i).getDate();
 				int created_by;
-				if(i>0){created_by = admin.get(i-1).getID();}
-				else{ created_by = admin.get(i).getID();}
-				adr = new AdminDetailResponse(admin.get(i).getID(), admin.get(i).getName(), str, created_by);
+				if(i>0){created_by = admin.get(i-1).getAID();}
+				else{ created_by = admin.get(i).getAID();}
+				adr = new AdminDetailResponse(admin.get(i).getAID(), admin.get(i).getName(), str, created_by);
 			}
 		}return adr;	
 	}
@@ -350,7 +363,8 @@ public class Club implements java.io.Serializable {
 		for(Subscriber s: subs){
 			for(Shipment ship: s.getShipments()){
 				if(ship.getStatus()==ShipmentStatus.DELIVERED){
-					if(ship.getYm().isAfter(startDate)&&ship.getYm().isBefore(endDate)){
+					YearMonth ym = YearMonth.parse(ship.getYm());
+					if(ym.isAfter(startDate)&&ym.isBefore(endDate)){
 						units_delivered += ship.getSize() * 6;
 						wine_revenue += ship.getSize()*ship.getMsDeliveryfee();
 						delivery_revenue += ship.getDeliveryfee();
@@ -361,8 +375,12 @@ public class Club implements java.io.Serializable {
 		return new RevenueResponse(units_delivered, wine_revenue, delivery_revenue);
 	}
 	
-	public void postMs(String mst, String ym, ArrayList<Wine> wines,ArrayList<MonthlySelection> monthlySelection,ArrayList<Admin> admin) {
-		admin.get(0).createMs(mst, ym, wines,monthlySelection );
+	public PostMsResponse postMs(String mst, String ym, ArrayList<Wine> wines,ArrayList<MonthlySelection> monthlySelection,
+			ArrayList<Admin> admin, ArrayList<Subscriber> subs) {
+		int MID = admin.get(0).createMs(mst, ym, wines,monthlySelection, subs);
+		PostMsResponse pmr = new PostMsResponse();
+		pmr.setMID(MID);
+		return pmr;
 	}
 	
 	public MonthlySelectionResponse printMs(ArrayList<MonthlySelection> monthlySelection){
@@ -378,11 +396,9 @@ public class Club implements java.io.Serializable {
 		ArrayList<WineResponse> wr = new ArrayList<WineResponse>();
 		for(MonthlySelection ms: monthlySelection){
 			if(ms.getID()==MID){
-				String date = Integer.toString(ms.getDate().get(Calendar.MONTH))+"/"+
-						Integer.toString(ms.getDate().get(Calendar.DAY_OF_MONTH))+"/"+
-						Integer.toString(ms.getDate().get(Calendar.YEAR));
+				String date = ms.getDate();
 				for(Wine w: ms.getMs()){
-					wr.add(new WineResponse(w.getID(),w.getLabelName()));
+					wr.add(new WineResponse(w.getWID(),w.getLabelName()));
 				}
 				mdr = new MstDetailResponse(MID,ms.getMst(),ms.getYm(),date,ms.getAID(),wr);
 			}
@@ -395,9 +411,10 @@ public class Club implements java.io.Serializable {
 		ArrayList<Subscriber> subsToDeliver = new ArrayList<Subscriber>();
 		for(Subscriber s:subs){
 			for(Shipment ship: s.getShipments()){
-				if(ship.getStatus()==ShipmentStatus.PENDING &&(ship.getYm() == ym)){
+				//YearMonth ym = YearMonth.parse(ship.getYm());
+				if(ship.getStatus()==ShipmentStatus.PENDING &&(ship.getYm().equals(Integer.toString(ym.getYear())+"-"+Integer.toString(ym.getMonthValue())))){
 					subsToDeliver.add(s);
-					dt.add(new DeliverTo(s.getName(),s.getPhone(),s.getEmail(),s.getAddress(),s.getMst()));
+					dt.add(new DeliverTo(s.getName(),s.getPhone(),s.getEmail(),s.getAddress(),s.getPreference()));
 				}
 			}
 		}
@@ -408,7 +425,7 @@ public class Club implements java.io.Serializable {
 		Receipt r = null;
 		for(Subscriber s: subs){
 			for(Shipment ship: s.getShipments()){
-				if(ship.getStatus()==ShipmentStatus.PENDING && ship.getID()==SID){
+				if(ship.getStatus()==ShipmentStatus.PENDING && ship.getSID()==SID){
 					ship.setStatus(ShipmentStatus.DELIVERED);
 					if(age>21){
 						r = new Receipt(s,nameReceiver);
@@ -424,7 +441,7 @@ public class Club implements java.io.Serializable {
 		for(Receipt r: receipts){
 			String date = Integer.toString(r.getDate().get(Calendar.DAY_OF_MONTH))+"-"
 					 +Integer.toString(r.getDate().get(Calendar.MONTH))+"-"+Integer.toString(r.getDate().get(Calendar.YEAR));
-			rr.add(new ReceiptResponse(r.getID(),date, r.getSID(),r.getSName()));
+			rr.add(new ReceiptResponse(r.getID(),date, r.getSID(),r.getName()));
 		}return new GetReceiptsResponse(rr);
 	}
 	
@@ -436,7 +453,7 @@ public class Club implements java.io.Serializable {
 						 +Integer.toString(r.getDate().get(Calendar.MINUTE));
 				String date = Integer.toString(r.getDate().get(Calendar.DAY_OF_MONTH))+"-"
 						 +Integer.toString(r.getDate().get(Calendar.MONTH))+"-"+Integer.toString(r.getDate().get(Calendar.YEAR));
-				rdr = new ReceiptDetailResponse(r.getID(),time, date, r.getSID(),r.getSName(),r.getReceiver());
+				rdr = new ReceiptDetailResponse(r.getID(),time, date, r.getSID(),r.getName(),r.getReceiver());
 			}
 		}return rdr;
 	}
@@ -444,8 +461,9 @@ public class Club implements java.io.Serializable {
 	public WineDetailResponse printAllWinesWID(int WID, ArrayList<Subscriber> subs){
 		for(Subscriber subscriber: subs){
 			for(Wine w: subscriber.getWines()){
-				if(w.getID()==WID){
-					return new WineDetailResponse(WID, w.getVariety(),w.getType(), w.getLabelName(),w.getGrape(),w.getRegion(), w.getCountry(),w.getMaker(),w.getYear(),w.getNumberOfRatings(), w.getRating());
+				if(w.getWID()==WID){
+					return new WineDetailResponse(WID, w.getVariety(),w.getType(), w.getLabelName(),w.getGrape(),
+							w.getRegion(), w.getCountry(),w.getMaker(),w.getYear(),w.getNumberOfRatings(), w.getRating());
 				}
 			}
 		}return null;

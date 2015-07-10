@@ -4,51 +4,49 @@ import java.util.ArrayList;
 
 public class ClubData {
 	
-	public String clubName;
-	public ArrayList<Subscriber> subs = new ArrayList<Subscriber>();
-	public ArrayList<Admin> admin = new ArrayList<Admin>();
-	public ArrayList<MonthlySelection> monthlySelection = new ArrayList<MonthlySelection>();
-	public ArrayList<Receipt> receipts = new ArrayList<Receipt>();
+	public final String clubName = "VIN";
+	public ArrayList<Subscriber> subscribers;
+	public ArrayList<Admin> admins;
+	public ArrayList<MonthlySelection> monthlySelection;
+	public ArrayList<Receipt> receipts;
 	
-	public ClubData() {}
+	public ClubData() {
+		this.subscribers = new ArrayList<Subscriber>();
+		this.admins = new ArrayList<Admin>();
+		this.monthlySelection = new ArrayList<MonthlySelection>();
+		this.receipts = new ArrayList<Receipt>();
+	}
 
 	public String getClubName() {
-		return clubName;
-	}
-
-	public void setClubName(String clubName) {
-		this.clubName = clubName;
+		return this.clubName;
 	}
 	
-	public ArrayList<Subscriber> getSubs(){
-		return this.subs;
+	public ArrayList<Subscriber> getSubscribers(){
+		return this.subscribers;
 	}
 	
-	public void setSubs(ArrayList<Subscriber> subs){
-		this.subs = subs;
+	public void setSubscribers(ArrayList<Subscriber> subscribers){
+		this.subscribers = subscribers;
 	}
 	
-	public ArrayList<Admin> getAdmin(){
-		return admin;
+	public ArrayList<Admin> getAdmins(){
+		return this.admins;
 	}
 	
-	public void setAdmin(ArrayList<Admin> admin){
-		this.admin = admin;
+	public void setAdmins(ArrayList<Admin> admin){
+		this.admins = admin;
 	}
 	
-	public ArrayList<MonthlySelection> getMst(){
-		return monthlySelection;
+	public ArrayList<MonthlySelection> getMonthlySelection(){
+		return this.monthlySelection;
 	}
 	
-	public void setMst(ArrayList<MonthlySelection> mst){
-		this.monthlySelection = mst;
-	}
 	
-	public ArrayList<Receipt> getReceipt(){
+	public ArrayList<Receipt> getReceipts(){
 		return this.receipts;
 	}
 	
-	public void setReceipt(ArrayList<Receipt> receipts){
+	public void setReceipts(ArrayList<Receipt> receipts){
 		this.receipts = receipts;
 	}
 

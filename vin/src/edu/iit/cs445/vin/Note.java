@@ -5,18 +5,25 @@ import java.util.Calendar;
 public class Note implements java.io.Serializable {
 
 	private static final long serialVersionUID = 1740864099621530866L;
-	private int ID;
+	private int NID;
 	private Calendar date;
 	private String content;	
 	
+	public Note(){
+    	this.NID = IdGenerator.newID();
+	}
 	public Note(String str){
 		this.date = Calendar.getInstance();
 		this.content=str;
-    	this.ID = IdGenerator.newID();
+    	this.NID = IdGenerator.newID();
 	}
 		
-	public int getID(){
-	    return this.ID;
+	public int getNID(){
+	    return this.NID;
+	}
+	
+	public void setNID(int ID){
+		this.NID = ID;
 	}
 
 	public Calendar getDate(){

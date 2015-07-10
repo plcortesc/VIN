@@ -10,12 +10,12 @@ public class ShipmentDetailResponse implements java.io.Serializable {
 	
 	private static final long serialVersionUID = 3536590418821279106L;
 	private ShipmentStatus status;
-	private YearMonth ym;
+	private String ym;
 	private String date;
 	private MonthlySelectionType mst;
 	private ArrayList<WineResponse> wines;
 	
-	public ShipmentDetailResponse(YearMonth ym,ShipmentStatus status, String date, MonthlySelectionType mst, ArrayList<WineResponse> wines ) {
+	public ShipmentDetailResponse(String ym,ShipmentStatus status, String date, MonthlySelectionType mst, ArrayList<WineResponse> wines ) {
 		this.setYm(ym);
 		this.setStatus(status);
 		this.setDate(date);
@@ -31,11 +31,11 @@ public class ShipmentDetailResponse implements java.io.Serializable {
 		this.status = status;
 	}
 
-	public YearMonth getYm() {
+	public String getYm() {
 		return ym;
 	}
 
-	public void setYm(YearMonth ym) {
+	public void setYm(String ym) {
 		this.ym = ym;
 	}
 

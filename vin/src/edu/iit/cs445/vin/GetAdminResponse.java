@@ -5,15 +5,15 @@ import java.util.ArrayList;
 public class GetAdminResponse implements java.io.Serializable {
 
 	private static final long serialVersionUID = 2934227982203296788L;
-	private ArrayList<AdminResponse> ar;
-	public GetAdminResponse(ArrayList<AdminResponse> ar) {
-		this.setAr(ar);
+	private ArrayList<AdminResponse> admins;
+	public GetAdminResponse(ArrayList<AdminResponse> admins) {
+		this.setAdmins(admins);
 	}
-	public ArrayList<AdminResponse> getAr() {
-		return ar;
+	public ArrayList<AdminResponse> getAdmins() {
+		return this.admins;
 	}
-	public void setAr(ArrayList<AdminResponse> ar) {
-		this.ar = ar;
+	public void setAdmins(ArrayList<AdminResponse> admins) {
+		this.admins = admins;
 	}
 
 }

@@ -6,8 +6,8 @@ public class ShipmentResponseSearch implements java.io.Serializable {
 
 	private static final long serialVersionUID = -1993916453449932907L;
 	private int ID;
-	private YearMonth ym;
-	public ShipmentResponseSearch(int ID, YearMonth ym) {
+	private String ym;
+	public ShipmentResponseSearch(int ID, String ym) {
 		this.setID(ID);
 		this.setYm(ym);
 	}
@@ -17,10 +17,10 @@ public class ShipmentResponseSearch implements java.io.Serializable {
 	public void setID(int iD) {
 		ID = iD;
 	}
-	public YearMonth getYm() {
+	public String getYm() {
 		return ym;
 	}
-	public void setYm(YearMonth ym) {
+	public void setYm(String ym) {
 		this.ym = ym;
 	}
 

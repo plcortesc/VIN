@@ -10,6 +10,12 @@ public class Receipt implements java.io.Serializable {
 	private int SID;
 	private String receiver;
 	private Subscriber s;
+	private String name;
+	
+	public Receipt() {
+		this.name ="pep";
+	}
+
 	
 	public Receipt(Subscriber s, String name) {
 		this.setID(IdGenerator.newID());
@@ -17,6 +23,7 @@ public class Receipt implements java.io.Serializable {
 		this.setSID(s.getID());
 		this.setReceiver(name);
 		this.s = s;
+		this.name = s.getName();
 
 	}
 
@@ -32,8 +39,6 @@ public class Receipt implements java.io.Serializable {
 
 	public void setSID(int SID) {this.SID = SID;}
 	
-	public String getSName(){return this.s.getName();}
-
 	public String getReceiver() {return receiver;}
 
 	public void setReceiver(String receiver) {this.receiver = receiver;}
@@ -50,5 +55,15 @@ public class Receipt implements java.io.Serializable {
 				 +getDate().get(Calendar.MONTH)+"-"+getDate().get(Calendar.YEAR)
 				 +"\nSubscriber: "+Integer.toString(SID)+"\nName: "+s.getName();
 		System.out.println(str);
+	}
+
+
+	public String getName() {
+		return name;
+	}
+
+
+	public void setName(String name) {
+		this.name = name;
 	}
 }

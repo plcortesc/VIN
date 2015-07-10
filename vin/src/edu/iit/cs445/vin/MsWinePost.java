@@ -15,4 +15,15 @@ public class MsWinePost {
 	public ArrayList<Wine> getWines(){
 		return this.wines;
 	}
+	
+	public void addWines(){
+		Wine wr = new Wine();
+		Wine ww = new Wine(WineVariety.WHITE, WineType.SWEET, "hola", "Hello", "Ni hao", "Spain", "Sterling", 2000);
+		for(int i=0;i<3;i++){
+			wines.add(wr);
+		}
+		for(int i=0;i<3;i++){
+			wines.add(ww);
+		}
+	}
 }

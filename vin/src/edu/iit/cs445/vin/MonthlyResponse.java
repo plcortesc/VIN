@@ -1,6 +1,5 @@
 package edu.iit.cs445.vin;
 
-import java.time.YearMonth;
 
 import edu.iit.cs445.vin.MonthlySelectionType;
 
@@ -8,10 +7,10 @@ public class MonthlyResponse implements java.io.Serializable {
 
 	private static final long serialVersionUID = -2637171385387587792L;
 	private int ID;
-	private YearMonth ym;
+	private String ym;
 	private MonthlySelectionType mst;
 	
-	public MonthlyResponse(int ID, YearMonth ym, MonthlySelectionType mst){
+	public MonthlyResponse(int ID, String ym, MonthlySelectionType mst){
 		this.setID(ID);
 		this.setYm(ym);
 		this.setMst(mst);
@@ -25,11 +24,11 @@ public class MonthlyResponse implements java.io.Serializable {
 		ID = iD;
 	}
 
-	public YearMonth getYm() {
+	public String getYm() {
 		return ym;
 	}
 
-	public void setYm(YearMonth ym) {
+	public void setYm(String ym) {
 		this.ym = ym;
 	}
 

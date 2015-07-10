@@ -2,12 +2,12 @@ package edu.iit.cs445.vin;
 
 import java.util.ArrayList;
 
-public class AddSubsResponse implements java.io.Serializable {
+public class ModifySubsResponse implements java.io.Serializable {
 
 	private static final long serialVersionUID = -6578652680339583408L;
 	private Integer UID;
 	private ArrayList<Errors> errors;
-	public AddSubsResponse(Integer UID,ArrayList<Errors> errors ) {
+	public ModifySubsResponse(Integer UID,ArrayList<Errors> errors ) {
 		this.setUID(UID);
 		if(errors == null){
 			this.setErrors(new ArrayList<Errors>());

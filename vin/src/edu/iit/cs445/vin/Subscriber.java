@@ -8,51 +8,57 @@ import java.util.Iterator;
 public class Subscriber implements java.io.Serializable {
 
 	private static final long serialVersionUID = 169056067626574235L;
-	private String name, email, phone, twitter, facebook;
-    private Address address;
-    private MonthlySelectionType mst;
     private int ID;
+	private String name, email, phone, twitter, facebook;
     private String date;
+	private Address address;
+    private MonthlySelectionType mst;
     private ArrayList<Shipment> shipments;
 	private ArrayList<Wine> wines;
 
     
     public Subscriber() {
+    	this.ID = IdGenerator.newID();
     	this.name = "Jane Doe";
     	this.email = "jane.doe@example.com";
     	this.phone = "1234567890";
     	this.address = new Address();
-    	this.mst = MonthlySelectionType.RW;
-    	this.setDate(Calendar.getInstance());
-    	this.ID = IdGenerator.newID();
     	this.facebook="sdaf";
     	this.twitter = "sad";
-    	this.shipments = null;
-    	this.wines = null;
+    	this.setDate(Calendar.getInstance());
+    	this.mst = MonthlySelectionType.RW;
+    	this.shipments = new ArrayList<Shipment>();
+    	this.wines = new ArrayList<Wine>();
     }
     public Subscriber (String name, String email, String phone, Address address) {
+    	this.ID = IdGenerator.newID();
     	this.name = name;
     	this.email = email;
     	this.phone = phone.replaceAll("[\\s\\-()]", ""); // drop all non-digit characters
     	this.address = address;
-    	this.mst = MonthlySelectionType.RW;
-    	this.setDate(Calendar.getInstance());
-    	this.ID = IdGenerator.newID();
     	this.twitter = "";
     	this.facebook = "";
+    	this.setDate(Calendar.getInstance());
+    	this.mst = MonthlySelectionType.RW;
+    	this.shipments = new ArrayList<Shipment>();
+    	this.wines = new ArrayList<Wine>();
     }
     public Subscriber (String name, String email, String phone, Address address, String fb, String tw) {
+    	this.ID = IdGenerator.newID();
     	this.name = name;
     	this.email = email;
     	this.phone = phone.replaceAll("[\\s\\-()]", ""); // drop all non-digit characters
     	this.address = address;
-    	this.mst = MonthlySelectionType.RW;
-    	this.setDate(Calendar.getInstance());
-    	this.ID = IdGenerator.newID();
     	this.twitter = tw;
     	this.facebook = fb;
+    	this.setDate(Calendar.getInstance());
+    	this.mst = MonthlySelectionType.RW;
+    	this.shipments = new ArrayList<Shipment>();
+    	this.wines = new ArrayList<Wine>();
     }
     
+    public int getID() {return this.ID;}
+    public void setID(int ID){this.ID = ID;}
     public void setName(String name){this.name = name;}
     public String getName(){return this.name;}
     public void setEmail(String email){this.email = email;}
@@ -61,30 +67,56 @@ public class Subscriber implements java.io.Serializable {
     public String getPhone(){return this.phone;}
     public void setAddress(Address address){this.address = address;}
     public Address getAddress(){return this.address;}
-    public void setMst(MonthlySelectionType mst){this.mst = mst;}
-    public MonthlySelectionType getMst(){return this.mst;}
     public void setFacebook(String fb){this.facebook = fb;}
     public String getFacebook(){return this.facebook;}
     public void setTwitter(String tw){this.twitter = tw;}
     public String getTwitter(){return this.twitter;}
-    public ArrayList<Shipment> getShipments(){return shipments;}
-	public String getDate() {return date;}
+    public String getDate() {return date;}
 	public void setDate(Calendar date) {this.date = Integer.toString(date.get(Calendar.YEAR))+"-"+
 										Integer.toString(date.get(Calendar.MONTH)+1)+"-"+
 										Integer.toString(date.get(Calendar.DAY_OF_MONTH));}
+    public void setDateString(String date){this.date = date;}
+    public void setMst(MonthlySelectionType mst){this.mst = mst;}
+    public MonthlySelectionType getPreference() {return this.mst;}
+    public void setPreference(MonthlySelectionType t) {this.mst = t;}
+    public ArrayList<Shipment> getShipments(){return shipments;}
+    public void setShipments(ArrayList<Shipment> shipments){ this.shipments = shipments;}
+    public ArrayList<Wine> getWines() {return wines;}
+	public void setWines(ArrayList<Wine> wines) {this.wines = wines;}
     
-    public void addShipment(){
-    	Shipment s = new Shipment(this.mst);
-    	for(Shipment shi:shipments){
-    		if(shi.getDate().get(Calendar.YEAR)!=Calendar.getInstance().get(Calendar.YEAR) 
-    		   || shi.getDate().get(Calendar.MONTH)!=Calendar.getInstance().get(Calendar.MONTH)){
-    			shipments.add(s);
-    		}
-    	}
+	public void addShipment(MonthlySelection ms){
+    	Shipment s = new Shipment(this.mst, ms);
+		if(this.shipments.size()==0){
+			shipments.add(s);
+		}else{
+			boolean repeated=false;
+			for(Shipment shi:this.shipments){
+	    		if(ms.getYm().equals(shi.getYm())) repeated=true;
+			}if(repeated==false) this.shipments.add(s);
+
+		}
+		
+		if(this.wines.size()==0){
+			wines.add(ms.getMs().get(0));
+		}
+		for(Wine w: ms.getMs()){
+			if(addWine(w)) wines.add(w);
+		}
     }
     
-    public void addModifyShipment(Calendar date, int size, MonthlySelectionType mst){
-    	Shipment s = new Shipment(this.mst);
+    public boolean addWine(Wine w){
+    	boolean add = true;
+    	for(Wine wine:wines){
+    		if(w.getLabelName().equals(wine.getLabelName())
+						&& w.getVariety()==wine.getVariety()
+						&& w.getType()==wine.getType()){
+    			add = false;
+    		}
+    	}return add;
+    }
+    
+    public void addModifyShipment(Calendar date, int size, MonthlySelectionType mst, MonthlySelection ms){
+    	Shipment s = new Shipment(this.mst, ms);
     	s.setSize(size);
     	s.setDate(date);
     	for(Shipment shi:shipments){
@@ -116,37 +148,14 @@ public class Subscriber implements java.io.Serializable {
     		return true;
     	} else return false;
     }
-
-    public int getID() {
-    	return this.ID;
-    }
-    public void setID(int ID){
-    	this.ID = ID;
-    }
-    
-    public MonthlySelectionType getPreference() {
-    	return mst;
-    }
-    
-    public void setPreference(MonthlySelectionType t) {
-    	this.mst = t;
-    }
     
     public void postNote(int SID,Note n){
     	for(int i=0; i<shipments.size();i++){
-			if(shipments.get(i).getID()==SID){
+			if(shipments.get(i).getSID()==SID){
 				shipments.get(i).addNote(n);
 			}
     	}
     }
-    
-	public ArrayList<Wine> getWines() {
-		return wines;
-	}
-
-	public void setWines(ArrayList<Wine> wines) {
-		this.wines = wines;
-	}
 	
 	public ArrayList<WineResponse> searchWine(String kw) {
 		ArrayList<WineResponse> coll = new ArrayList<WineResponse>();
@@ -155,13 +164,13 @@ public class Subscriber implements java.io.Serializable {
 			if(kw.equals("")) {
 				while(i.hasNext()) {
 					Wine w = i.next();
-					coll.add(new WineResponse(w.getID(),w.getLabelName()));
+					coll.add(new WineResponse(w.getWID(),w.getLabelName()));
 				}
 			}else {
 				while(i.hasNext()) {
 					Wine w = i.next();
 					if(w.isMatch(kw)) {
-						coll.add(new WineResponse(w.getID(),w.getLabelName()));
+						coll.add(new WineResponse(w.getWID(),w.getLabelName()));
 					}
 				}
 			}	
@@ -174,39 +183,43 @@ public class Subscriber implements java.io.Serializable {
 		ArrayList<NoteResponseSearch> coll = new ArrayList<NoteResponseSearch>();
 		if(shipments!=null){
 			for(Shipment s:shipments){
-				Iterator<Note> is = s.getNotes().iterator();
-				if(kw.equals("")) {
-					while(is.hasNext()) {
-						Note n = is.next();
-						coll.add(new NoteResponseSearch(n.getID(),n.getContent()));
-					}
-				}else {
-					while(is.hasNext()) {
-						Note n = is.next();
-						if(n.isMatch(kw)) {
-							coll.add(new NoteResponseSearch(n.getID(),n.getContent()));
+				if(s.getNotes()!=null){
+					Iterator<Note> is = s.getNotes().iterator();
+					if(kw.equals("")) {
+						while(is.hasNext()) {
+							Note n = is.next();
+							coll.add(new NoteResponseSearch(n.getNID(),n.getContent()));
 						}
-					}
-				}	
-				if(coll.size() == 0) System.out.println("");
+					}else {
+						while(is.hasNext()) {
+							Note n = is.next();
+							if(n.isMatch(kw)) {
+								coll.add(new NoteResponseSearch(n.getNID(),n.getContent()));
+							}
+						}
+					}	
+					if(coll.size() == 0) System.out.println("");
+				}
 			}
 		}
 		if(wines!=null){
 			for(Wine w:wines){
-				Iterator<Note> iw = w.getNotes().iterator();
-				if(kw.equals("")) {
-					while(iw.hasNext()) {
-						Note n = iw.next();
-						coll.add(new NoteResponseSearch(n.getID(),n.getContent()));
-					}
-				}else {
-					while(iw.hasNext()) {
-						Note n = iw.next();
-						if(n.isMatch(kw)) {
-							coll.add(new NoteResponseSearch(n.getID(),n.getContent()));
+				if(w.getNotes()!=null){
+					Iterator<Note> iw = w.getNotes().iterator();
+					if(kw.equals("")) {
+						while(iw.hasNext()) {
+							Note n = iw.next();
+							coll.add(new NoteResponseSearch(n.getNID(),n.getContent()));
 						}
-					}
-				}	
+					}else {
+						while(iw.hasNext()) {
+							Note n = iw.next();
+							if(n.isMatch(kw)) {
+								coll.add(new NoteResponseSearch(n.getNID(),n.getContent()));
+							}
+						}
+					}	
+				}
 				if(coll.size() == 0) System.out.println("");
 			}
 		}
@@ -221,13 +234,13 @@ public class Subscriber implements java.io.Serializable {
 			if(kw.equals("")) {
 				while(i.hasNext()) {
 					Shipment s = i.next();
-					coll.add(new ShipmentResponseSearch(s.getID(),s.getYm()));
+					coll.add(new ShipmentResponseSearch(s.getSID(),s.getYm()));
 				}
 			}else {
 				while(i.hasNext()) {
 					Shipment s = i.next();
 					if(s.isMatch(kw)) {
-						coll.add(new ShipmentResponseSearch(s.getID(),s.getYm()));
+						coll.add(new ShipmentResponseSearch(s.getSID(),s.getYm()));
 					}
 				}
 			}	

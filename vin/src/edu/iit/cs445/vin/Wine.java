@@ -1,6 +1,5 @@
 package edu.iit.cs445.vin;
 
-import java.time.Year;
 import java.util.ArrayList;
 
 public class Wine implements java.io.Serializable {
@@ -13,10 +12,10 @@ public class Wine implements java.io.Serializable {
 	private String region;	// e.g. Napa, Russian Valley, etc.
 	private String country; // e.g. France, USA, Australia, Chile
 	private String maker;	// the wine maker, e.g. Sterling, Krupp Brother, etc.
-	private Year year;		// Vintage year
-	private static int numberOfRatings;
-	private static float rating = 0;
-	private int ID;
+	private int year;		// Vintage year
+	private int numberOfRatings;
+	private float rating;
+	private int WID;
 	private ArrayList<Note> notes;
 
 	public Wine() {
@@ -27,11 +26,12 @@ public class Wine implements java.io.Serializable {
 		this.region = "Napa";
 		this.country = "USA";
 		this.maker = "Sterling";
-		this.year = Year.parse("2011");
-		this.ID = IdGenerator.newID();
+		this.year = 2011;
+		this.WID = IdGenerator.newID();
+    	this.notes = new ArrayList<Note>();
 	}
 
-	public Wine(WineVariety v, WineType t, String ln, String g, String r, String c, String m, Year y) {
+	public Wine(WineVariety v, WineType t, String ln, String g, String r, String c, String m, int y) {
 		this.wv = v;
 		this.wt = t;
 		this.labelName = ln;
@@ -40,15 +40,19 @@ public class Wine implements java.io.Serializable {
 		this.country = c;
 		this.maker = m;
 		this.year = y;
-		this.ID = IdGenerator.newID();
+		this.WID = IdGenerator.newID();
+    	this.notes = new ArrayList<Note>();
 	}
 	
-	public int getID(){
-		return this.ID;
+	public int getWID(){
+		return this.WID;
 	}
 
 	public WineVariety getVariety() {
 		return this.wv;
+	}
+	public void setVariety(WineVariety wv){
+		this.wv = wv;
 	}
 	
 	public WineType getType() {
@@ -76,7 +80,7 @@ public class Wine implements java.io.Serializable {
 	}
 	
 	public String getYear() {
-		return this.year.toString();
+		return Integer.toString(this.year);
 	}
 
 	public int getNumberOfRatings() {
@@ -135,30 +139,34 @@ public class Wine implements java.io.Serializable {
 
     private boolean isMatchYear(String kw) {
     	String regex = "(?i).*" + kw + ".*";
-        return this.year.toString().matches(regex);
+        return Integer.toString(this.year).matches(regex);
     }
     
     public void addNote(Note n){
-		if(n.getContent().length()<128){
-			System.out.println("Minimum note length: 128 characters");
-		} else if(n.getContent().length()>1024){
+//		if(n.getContent().length()<128){
+//			System.out.println("Minimum note length: 128 characters");
+//		} else 
+    	if(n.getContent().length()>1024){
 			System.out.println("Maximum note length: 1024 characters");
+		}else{
+			System.out.println("Congratulations! Note added");
+			this.notes.add(n);
 		}
-		System.out.println("Congratulations! Note added");
-		this.notes.add(n);
+		
 	}	
     
     public void updateNote(int NID, Note n){
 		for(int i=0; i<notes.size(); i++){
-			if(notes.get(i).getID()==NID){
+			if(notes.get(i).getNID()==NID){
 				notes.set(i, n);
+				notes.get(i).setNID(NID);
 			}
 		}
 	}
     
     public void removeNote(int NID){
 		for(int i=0; i<notes.size(); i++){
-			if(notes.get(i).getID()==NID){
+			if(notes.get(i).getNID()==NID){
 				notes.remove(i);
 			}
 		}
@@ -169,12 +177,12 @@ public class Wine implements java.io.Serializable {
 	}
     
     public void printWine(){
-    	String str="ID: "+this.ID+"\nLabel name: "+this.labelName;
+    	String str="ID: "+this.WID+"\nLabel name: "+this.labelName;
     	System.out.println(str);
     }
     
     public void printDetailedWine(){
-    	String str="ID: "+this.ID+"\nVariety: "+this.wv+"\nType: "+this.wt+"\nLabel name: "+this.labelName+
+    	String str="ID: "+this.WID+"\nVariety: "+this.wv+"\nType: "+this.wt+"\nLabel name: "+this.labelName+
     				"\nGrape: "+this.grape+"\nRegion: "+this.region+"\nCountry: "+this.country+"\nMaker: "+
     				this.maker+"\nYear: "+this.year+"\nRating count: "+getNumberOfRatings()+"\nRating: "+ getRating();
     	System.out.println(str);

@@ -2,20 +2,32 @@ README
 
 First of all we have to check if we have all required software for this application. I guess java is already configured, but just in case, I will outline how to be able to execute the whole program. 
 
-First, download the “jackson-all-1.9.11.jar” and “commons-cli-1.2.jar” files. Those libraries can be found on the “src” directory of my project.
+First, download apache-maven-3.3.3 from the following webpage: https://maven.apache.org/download.cgi
 
 I have been working with MAC OS, since it is a UNIX OS, will perfectly work on Linux.
 Once we have it downloaded, we can proceed to compile and execute the program with these commands:
 
-To compile the program:
+Once you are placed in the cs445 directory (where is the pom.xml file) run the following command:
 
-$ cd VIN\ Project/vin/src
+$ mvn clean
 
-$ javac -classpath ./jackson-all-1.9.11.jar:./commons-cli-1.2.jar: edu/iit/cs445/vin/*.java
+To run the test and the coverage write:
 
-To execute:
+$ mvn clean cobertura:cobertura
 
-$ java -cp ./jackson-all-1.9.11.jar:./commons-cli-1.2.jar: edu.iit.cs445.vin.Main
+It will generate some files. The ones that we are interested are two:
+	
+	- "edu.iit.cs445.Test.VinTest.txt", which is located in cs445/target/surefire-reports/
+
+	- "index.html", located in cs445/target/site/cobertura/
+
+Finally run:
+
+$ mvn install
+
+After that you will be ready to run the program executing the following, but first you need to give the right privileges to the script:
+$ chmod +x vinClub.sh
+$ ./vinClub.sh [commands]
 
 and the corresponding commands for each use case that are described as follows:
 
@@ -34,7 +46,7 @@ and the corresponding commands for each use case that are described as follows:
 -delete : delete some stuff
 -rank : display wine ranking
 -revenue : display revenue
--add_monthly_selection : add a monthly selection
+-add_monthly_selection : add a monthly selection 
 -view_monthly_selection : display monthly selection
 -subscriber_list : display subscribers to deliver
 -add_receipt : add receipt
@@ -47,7 +59,7 @@ and the corresponding commands for each use case that are described as follows:
 -s : state
 -z : zip
 -h : phone
--f : facebook/file (file for add_monthly_selection and load)
+-f : facebook/file (file for add_monthly_selection, called wines.ser, and load, named subs.ser)
 -t : twitter
 -k : keyword
 -r : rating
